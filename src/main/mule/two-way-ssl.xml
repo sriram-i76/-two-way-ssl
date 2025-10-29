@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6fe6b8bc-46eb-4005-8cfd-2af5d8db26a9" >
+		<http:listener-connection protocol="HTTPS" host="0.0.0.0" port="8082" >
+			<tls:context >
+				<tls:trust-store path="server-truststore.jks" password="mulesoft" type="jks" />
+				<tls:key-store type="jks" path="server-keystore.jks" keyPassword="mulesoft" password="mulesoft" />
+			</tls:context>
+		</http:listener-connection>
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="dcb431d7-ec6d-4604-a72e-dfd59fb4fa57" >
+		<http:request-connection protocol="HTTPS" host="localhost" port="8082" >
+			<tls:context >
+				<tls:trust-store path="client-truststore.jks" password="mulesoft" type="jks" />
+				<tls:key-store type="jks" path="client-keystore.jks" keyPassword="mulesoft" password="mulesoft" />
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="7bfe6b40-fdc0-401c-bf30-90a5d94d9767" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<flow name="two-way-sslFlow" doc:id="578d868f-7c7b-4fea-a5a1-f5fd7cbb49b0" >
+		<http:listener doc:name="Listener" doc:id="d186da0f-d877-4944-bb51-f80f4c28bf7e" config-ref="HTTP_Listener_config" path="/server"/>
+		<set-payload value='#["This is for testing"]' doc:name="Set Payload" doc:id="17c17881-3202-46d1-89f8-baad886e96da" />
+	</flow>
+	<flow name="two-way-sslFlow1" doc:id="639bca9b-4d81-4217-8981-a48fe7242f91" >
+		<http:listener doc:name="Listener" doc:id="d0703f4b-6512-4b40-9c3a-c43b5d2191c8" config-ref="HTTP_Listener_config1" path="/client"/>
+		<http:request method="GET" doc:name="Request" doc:id="8405190d-217a-4f3a-970e-661bc871ab3d" config-ref="HTTP_Request_configuration" path="/server">
+		</http:request>
+	</flow>
+</mule>
